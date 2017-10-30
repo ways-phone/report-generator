@@ -17,6 +17,8 @@ class OutcomesPage extends Component {
     addOutcomeGroup: () => void,
     addGroupToOutcome: () => void,
     removeGroupFromOutcome: () => void,
+    removeOutcome: outcome => void,
+    removeOutcomeGroup: group => void,
     groups: [],
     outcomes: []
   };
@@ -62,6 +64,8 @@ class OutcomesPage extends Component {
                   removeGroupFromOutcome={this.props.removeGroupFromOutcome}
                   groups={this.getOutcomeGroups()}
                   outcomes={this.getOutcomes()}
+                  removeOutcome={this.props.removeOutcome}
+                  removeOutcomeGroup={this.props.removeOutcomeGroup}
                 />
               </div>
             </div>

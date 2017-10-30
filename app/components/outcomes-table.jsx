@@ -6,7 +6,9 @@ export default class OutcomesTable extends Component {
     groups: [],
     outcomes: [],
     addGroupToOutcome: () => void,
-    removeGroupFromOutcome: () => void
+    removeGroupFromOutcome: () => void,
+    removeOutcome: outcome => void,
+    removeOutcomeGroup: group => void
   };
 
   getTd(group, outcome) {
@@ -20,19 +22,41 @@ export default class OutcomesTable extends Component {
     return <td onClick={() => this.props.addGroupToOutcome(group, outcome)} />;
   }
 
+  removeOutcomeGroup(group) {
+    this.props.removeOutcomeGroup(group);
+  }
+
+  removeOutcome(outcome) {
+    this.props.removeOutcome(outcome);
+  }
+
   render() {
     return (
       <table className="table table-responsive table-bordered">
         <thead>
           <tr>
             <th>Name</th>
-            {this.props.groups.map(group => <th>{group.name}</th>)}
+            {this.props.groups.map(group => (
+              <th>
+                {group.name}
+                <i
+                  onClick={() => this.removeOutcomeGroup(group)}
+                  className="pull-right glyphicon glyphicon-remove"
+                />
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
           {this.props.outcomes.map(outcome => (
             <tr>
-              <td>{outcome.name}</td>
+              <td>
+                {outcome.name}{' '}
+                <i
+                  onClick={() => this.removeOutcome(outcome)}
+                  className="pull-right glyphicon glyphicon-remove"
+                />
+              </td>
               {this.props.groups.map(group => this.getTd(group, outcome))}
             </tr>
           ))}

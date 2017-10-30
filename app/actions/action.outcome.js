@@ -13,6 +13,12 @@ export const FETCH_OUTCOME_GROUPS_FAILURE = 'FETCH_OUTCOME_GROUPS_FAILURE';
 export const ADD_GROUP_TO_OUTCOME_SUCCESS = 'ADD_GROUP_TO_OUTCOME_SUCCESS';
 export const ADD_GROUP_TO_OUTCOME_FAILURE = 'ADD_GROUP_TO_OUTCOME_FAILURE';
 
+export const REMOVE_OUTCOME_SUCCESS = 'REMOVE_OUTCOME_SUCCESS';
+export const REMOVE_OUTCOME_FAILURE = 'REMOVE_OUTCOME_FAILURE';
+
+export const REMOVE_OUTCOME_GROUP_SUCCESS = 'REMOVE_OUTCOME_GROUP_SUCCESS';
+export const REMOVE_OUTCOME_GROUP_FAILURE = 'REMOVE_OUTCOME_GROUP_FAILURE';
+
 export const REMOVE_GROUP_FROM_OUTCOME_SUCCESS =
   'REMOVE_GROUP_FROM_OUTCOME_SUCCESS';
 export const REMOVE_GROUP_FROM_OUTCOME_FAILURE =
@@ -65,6 +71,27 @@ export const removeGroupFromOutcomeSuccess = outcome => ({
 });
 export const removeGroupFromOutcomeFailure = err => ({
   type: REMOVE_GROUP_FROM_OUTCOME_FAILURE,
+  err
+});
+
+export const removeOutcomeSuccess = outcome => ({
+  type: REMOVE_OUTCOME_SUCCESS,
+  outcome
+});
+
+export const removeOutcomeFailure = err => ({
+  type: REMOVE_OUTCOME_FAILURE,
+  err
+});
+
+export const removeOutcomeGroupSuccess = (updatedOutcomes, groupRemoved) => ({
+  type: REMOVE_OUTCOME_GROUP_SUCCESS,
+  updatedOutcomes,
+  groupRemoved
+});
+
+export const removeOutcomeGroupFailure = err => ({
+  type: REMOVE_OUTCOME_GROUP_FAILURE,
   err
 });
 
@@ -122,4 +149,25 @@ export const removeGroupFromOutcome = (group, outcome) => dispatch => {
     )
     .then(update => dispatch(removeGroupFromOutcomeSuccess(update[1])))
     .catch(err => dispatch(removeGroupFromOutcomeFailure(err)));
+};
+
+export const removeOutcome = outcome => dispatch => {
+  Dbs.outcomesDB
+    .remove({ _id: outcome._id })
+    .then(() => dispatch(removeOutcomeSuccess(outcome)))
+    .catch(err => dispatch(removeOutcomeFailure(err)));
+};
+
+export const removeOutcomeGroup = group => dispatch => {
+  Dbs.outcomeGroupDB
+    .remove({ _id: group._id })
+    .then(() => {
+      return Dbs.outcomesDB.update(
+        { groups: { $elemMatch: { _id: group._id } } },
+        { $pull: { groups: group } },
+        { returnUpdatedDocs: true, multi: true }
+      );
+    })
+    .then(updated => dispatch(removeOutcomeGroupSuccess(updated, group)))
+    .catch(err => dispatch(removeOutcomeGroupFailure(err)));
 };

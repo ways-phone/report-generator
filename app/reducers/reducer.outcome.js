@@ -2,7 +2,7 @@ import * as types from '../actions/action.outcome';
 
 const fetchOutcomes = (state, outcomes) => ({
   ...state,
-  outcomes,
+  outcomes
 });
 
 const addOutcomeSuccess = (state, outcome) => {
@@ -13,7 +13,7 @@ const addOutcomeSuccess = (state, outcome) => {
 
 const fetchOutcomeGroups = (state, groups) => ({
   ...state,
-  groups,
+  groups
 });
 
 const addOutcomeGroupSuccess = (state, outcomeGroup) => {
@@ -21,7 +21,7 @@ const addOutcomeGroupSuccess = (state, outcomeGroup) => {
   groups.push(outcomeGroup);
   return {
     ...state,
-    groups,
+    groups
   };
 };
 
@@ -42,9 +42,33 @@ const removeGroupFromOutcomeSuccess = (state, outcome) => {
   return { ...state, outcomes: updated };
 };
 
+const removeOutcome = (state, outcome) => {
+  const outcomes = state.outcomes.filter(t => t._id !== outcome._id);
+  return {
+    ...state,
+    outcomes
+  };
+};
+
+const removeOutcomeGroup = (state, updatedOutcomes, groupRemoved) => {
+  console.log(updatedOutcomes);
+  console.log(groupRemoved);
+  const outcomes = state.outcomes.map(outcome => {
+    const updateArr = updatedOutcomes[1].filter(t => t._id === outcome._id);
+    if (updateArr.length > 0) return updateArr[0];
+    return outcome;
+  });
+  const groups = state.groups.filter(group => group._id !== groupRemoved._id);
+  return {
+    ...state,
+    outcomes,
+    groups
+  };
+};
+
 const handleError = (state, err) => ({
   ...state,
-  err,
+  err
 });
 
 export default function outcomes(state = {}, action) {
@@ -59,19 +83,26 @@ export default function outcomes(state = {}, action) {
       return handleError(state, action.err);
     case types.FETCH_OUTCOME_GROUPS_SUCCESS:
       return fetchOutcomeGroups(state, action.outcomeGroups);
-    case types.FETCH_OUTCOME_GROUPS_FAILURE:
-      return handleError(state, action.err);
     case types.ADD_OUTCOME_GROUP_SUCCESS:
       return addOutcomeGroupSuccess(state, action.outcomeGroup);
-    case types.ADD_OUTCOME_GROUP_FAILURE:
-      return handleError(state, action.err);
     case types.ADD_GROUP_TO_OUTCOME_SUCCESS:
       return addGroupToOutcomeSuccess(state, action.outcome);
     case types.REMOVE_GROUP_FROM_OUTCOME_SUCCESS:
       return removeGroupFromOutcomeSuccess(state, action.outcome);
+    case types.REMOVE_OUTCOME_SUCCESS:
+      return removeOutcome(state, action.outcome);
+    case types.REMOVE_OUTCOME_GROUP_SUCCESS:
+      return removeOutcomeGroup(
+        state,
+        action.updatedOutcomes,
+        action.groupRemoved
+      );
+    case types.FETCH_OUTCOME_GROUPS_FAILURE:
     case types.ADD_GROUP_TO_OUTCOME_FAILURE:
-      return handleError(state, action.err);
+    case types.ADD_OUTCOME_GROUP_FAILURE:
     case types.REMOVE_GROUP_FROM_OUTCOME_FAILURE:
+    case types.REMOVE_OUTCOME_FAILURE:
+    case types.REMOVE_OUTCOME_GROUP_FAILURE:
       return handleError(state, action.err);
     default:
       return state;
