@@ -1,0 +1,9 @@
+.uploadedFileContainer {
+  color: grey;
+  font-size: 27px;
+  padding: 26px;
+  margin-top: 14px;
+}
+.uploadedFileContainer > ul > li {
+  margin-left: -44px;
+}
