@@ -68,7 +68,7 @@ export default class ReportGenerator {
     if (this._isOutcomeGroup(column.value)) {
       return {
         name: column.name,
-        value: this._handleOutcomeGroup(row, column),
+        value: this._handleOutcomeGroup(row, column)
       };
     }
     // retrieve Contact Target and Conversion Target from the campaignKPI table
@@ -80,7 +80,7 @@ export default class ReportGenerator {
     if (column.value === 'Hours') {
       return {
         name: column.name,
-        value: row.hours,
+        value: row.hours
       };
     }
   }
@@ -91,12 +91,16 @@ export default class ReportGenerator {
 
     if (kpi.length > 0) {
       if (column.value === 'Contact Target') {
-        return { name: column.value, value: Number(kpi[0].contact) };
+        return { name: column.name, value: Number(kpi[0].contact) };
       }
-      return { name: column.value, value: Number(kpi[0].conversion / 100) };
+      return {
+        name: column.name,
+        value: Number(kpi[0].conversion / 100),
+        isPercentage: true
+      };
     }
     // if they dont exist return 0;
-    return { name: column.value, value: 0 };
+    return { name: column.name, value: 0 };
   }
 
   _generateStaticRow(row) {
@@ -117,7 +121,8 @@ export default class ReportGenerator {
         return (value1 * value2).toFixed(0);
       case '/':
         if (value2 === 0) return 0;
-        return (value1 / value2).toFixed(2);
+
+        return value1 / value2;
       case '-':
         return value1 - value2;
       case '+':
@@ -157,7 +162,11 @@ export default class ReportGenerator {
       Number(value2)
     );
 
-    return { name: column.name, value: result };
+    return {
+      name: column.name,
+      value: result,
+      isPercentage: column.isPercentage
+    };
   }
 
   _generateFormulaRow(row) {

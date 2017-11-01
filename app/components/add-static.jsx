@@ -8,7 +8,7 @@ export default class AddStatic extends Component {
     outcomes: [],
     options: [],
     columns: [],
-    submit: () => void,
+    submit: () => void
   };
 
   constructor(props) {
@@ -16,11 +16,12 @@ export default class AddStatic extends Component {
     this.state = {
       name: '',
       value: '',
+      isPercentage: false,
       type: 'static',
       errors: {
         name: '',
-        type: '',
-      },
+        type: ''
+      }
     };
   }
 
@@ -29,7 +30,7 @@ export default class AddStatic extends Component {
     position: 'top right',
     theme: 'dark',
     time: 5000,
-    transition: 'scale',
+    transition: 'scale'
   };
 
   validate() {
@@ -38,7 +39,7 @@ export default class AddStatic extends Component {
     if (!this.state.name) {
       this.msg.show('Please enter a column name', {
         time: 2000,
-        type: 'error',
+        type: 'error'
       });
       isValid = false;
     }
@@ -48,7 +49,7 @@ export default class AddStatic extends Component {
     ) {
       this.msg.show('That column already exists', {
         time: 2000,
-        type: 'error',
+        type: 'error'
       });
       isValid = false;
     }
@@ -56,7 +57,7 @@ export default class AddStatic extends Component {
     if (!this.state.value) {
       this.msg.show('Please enter a column type', {
         time: 2000,
-        type: 'error',
+        type: 'error'
       });
 
       isValid = false;
@@ -82,8 +83,13 @@ export default class AddStatic extends Component {
         name: this.state.name,
         value: this.state.value,
         type: this.state.type,
+        isPercentage: this.state.isPercentage
       });
     }
+  }
+
+  handlePercentageChange() {
+    this.setState({ ...this.state, isPercentage: !this.state.isPercentage });
   }
 
   render() {
@@ -104,14 +110,14 @@ export default class AddStatic extends Component {
         <hr />
         <div className="row">
           <form className="col-md-12">
-            <div className="form-group col-md-6">
+            <div className="form-group col-md-4">
               <label>Column Name</label>
               <input
                 className="form-control"
                 onChange={e => this.handleNameChange(e)}
               />
             </div>
-            <div className="form-group col-md-6">
+            <div className="form-group col-md-4">
               <label>Type</label>
               <select
                 className="form-control"
@@ -123,6 +129,21 @@ export default class AddStatic extends Component {
                 {this.props.options.map(group => <option>{group.name}</option>)}
               </select>
             </div>
+            <div className="form-group col-md-4">
+              <label />
+              <div className="checkbox">
+                <h2>
+                  <label>
+                    <input
+                      onClick={this.handlePercentageChange.bind(this)}
+                      type="checkbox"
+                    />{' '}
+                    Is Percentage
+                  </label>
+                </h2>
+              </div>
+            </div>
+
             <div className="form-group col-md-12" />
             <div className="form-group col-md-12">
               <button className="form-control" onClick={this.submit.bind(this)}>

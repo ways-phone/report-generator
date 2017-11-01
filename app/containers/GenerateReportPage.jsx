@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import _ from 'underscore';
 
 import * as actions from '../actions/action.generate-report';
 
@@ -20,7 +21,7 @@ class GenerateReportPage extends Component {
     outcomes: [],
     reports: [],
     kpis: [],
-    finalReport: [],
+    finalReport: []
   };
 
   constructor(props) {
@@ -30,6 +31,8 @@ class GenerateReportPage extends Component {
       selectedFile: '',
       finalReport: this.props.finalReport,
       search: '',
+      sorted: '',
+      sortedBy: ''
     };
   }
 
@@ -42,15 +45,15 @@ class GenerateReportPage extends Component {
 
   selectReport(e) {
     const id = e.target.value;
-    console.log(id);
+
     const selected = this.props.reports.filter(t => t._id === id)[0];
-    console.log(selected);
+
     this.setState({ ...this.state, selectedReport: selected });
   }
 
   selectFile(e) {
     const name = e.target.value;
-    console.log(name);
+
     this.setState({ ...this.state, selectedFile: this.props[name] });
   }
 
@@ -60,25 +63,76 @@ class GenerateReportPage extends Component {
       data: this.state.selectedFile,
       outcomes: this.props.outcomes,
       groups: this.props.groups,
-      kpis: this.props.kpis,
+      kpis: this.props.kpis
     });
   }
 
   handleFilterChange(e) {
-    this.setState({ ...this.state, filter: e.target.value });
+    const filter = e.target.value;
+
+    if (!filter) {
+      this.setState({
+        ...this.state,
+        filter,
+        sorted: '',
+        sortedBy: ''
+      });
+    } else {
+      this.setState({ ...this.state, filter });
+    }
   }
 
   getReport() {
-    if (!this.state.filter) return this.props.finalReport;
-    return this.props.finalReport.filter(
+    if (!this.state.filter) return this.state.sorted || this.props.finalReport;
+    const report = this.state.sorted || this.props.finalReport;
+    return report.filter(
       t =>
         t.name.toLowerCase().indexOf(this.state.filter.toLocaleLowerCase()) !==
         -1
     );
   }
 
+  _formatForSort(name, report) {
+    const f = report.map(row => {
+      return {
+        name: row.name,
+        value: row.results.filter(t => t.name === name)[0].value || 0
+      };
+    });
+
+    return f;
+  }
+
+  sortByResultField(name, report) {
+    const metric = _.sortBy(this._formatForSort(name, report), o => o.value);
+    const sorted = [];
+
+    metric.forEach(sortRow => {
+      report.forEach(row => {
+        if (row.name === sortRow.name) sorted.push(row);
+      });
+    });
+    return sorted;
+  }
+
+  setSorted(name, sorted) {
+    if (name === this.state.sortedBy) {
+      sorted = sorted.reverse();
+      name = '';
+    }
+    this.setState({ ...this.state, sorted, sortedBy: name });
+  }
+
+  sort(name, report) {
+    if (name === 'Campaign') {
+      this.setSorted(name, _.sortBy(report, t => t.name));
+    } else {
+      const sorted = this.sortByResultField(name, report);
+      this.setSorted(name, sorted);
+    }
+  }
+
   render() {
-    console.log(this.state);
     if (!this.props.finalReport) {
       return (
         <ChooseReport
@@ -93,13 +147,15 @@ class GenerateReportPage extends Component {
         />
       );
     }
+
     return (
       <ReportView
         handleFilterChange={this.handleFilterChange.bind(this)}
-        search={this.state.search}
+        filter={this.state.filter}
         clearReport={this.props.clearReport}
         finalReport={this.props.finalReport}
         getReport={this.getReport.bind(this)}
+        sort={this.sort.bind(this)}
       />
     );
   }
@@ -109,7 +165,6 @@ function mapStateToProps(state) {
   const newState = { ...state.generateReport };
   newState.agents = state.upload.agents.data;
   newState.campaigns = state.upload.campaigns.data;
-  console.log(newState);
   return newState;
 }
 

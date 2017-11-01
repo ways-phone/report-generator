@@ -7,7 +7,7 @@ export default class AddFormula extends Component {
     cancel: () => void,
     options: [],
     submit: column => void,
-    columns: [],
+    columns: []
   };
 
   constructor(props) {
@@ -17,7 +17,8 @@ export default class AddFormula extends Component {
       value1: '',
       operator: '',
       value2: '',
-      type: 'formula',
+      isPercentage: false,
+      type: 'formula'
     };
   }
 
@@ -26,7 +27,7 @@ export default class AddFormula extends Component {
     position: 'top right',
     theme: 'dark',
     time: 5000,
-    transition: 'scale',
+    transition: 'scale'
   };
 
   validate() {
@@ -34,7 +35,7 @@ export default class AddFormula extends Component {
     if (!this.state.name) {
       this.msg.show('Please enter a column name', {
         time: 2000,
-        type: 'error',
+        type: 'error'
       });
 
       isValid = false;
@@ -44,7 +45,7 @@ export default class AddFormula extends Component {
     ) {
       this.msg.show('That column already exists', {
         time: 2000,
-        type: 'error',
+        type: 'error'
       });
       isValid = false;
     }
@@ -52,7 +53,7 @@ export default class AddFormula extends Component {
     if (!this.state.value1) {
       this.msg.show('Please enter a first value', {
         time: 2000,
-        type: 'error',
+        type: 'error'
       });
 
       isValid = false;
@@ -61,7 +62,7 @@ export default class AddFormula extends Component {
     if (!this.state.operator) {
       this.msg.show('Please enter an operator', {
         time: 2000,
-        type: 'error',
+        type: 'error'
       });
 
       isValid = false;
@@ -70,7 +71,7 @@ export default class AddFormula extends Component {
     if (!this.state.value2) {
       this.msg.show('Please enter a second value', {
         time: 2000,
-        type: 'error',
+        type: 'error'
       });
 
       isValid = false;
@@ -95,10 +96,13 @@ export default class AddFormula extends Component {
     this.setState({ ...this.state, operator: e.target.value });
   }
 
+  handlePercentageChange() {
+    this.setState({ ...this.state, isPercentage: !this.state.isPercentage });
+  }
+
   submit() {
     if (this.validate()) {
       this.state.id = uuidv1();
-      console.log(this.state);
       this.props.submit(this.state);
     }
   }
@@ -121,12 +125,26 @@ export default class AddFormula extends Component {
         <hr />
         <div className="row">
           <form className="col-md-12">
-            <div className="form-group col-md-12">
+            <div className="form-group col-md-8">
               <label>Column Name</label>
               <input
                 className="form-control"
                 onChange={e => this.handleNameChange(e)}
               />
+            </div>
+            <div className="form-group col-md-4">
+              <label />
+              <div className="checkbox">
+                <h2>
+                  <label>
+                    <input
+                      onClick={this.handlePercentageChange.bind(this)}
+                      type="checkbox"
+                    />{' '}
+                    Is Percentage
+                  </label>
+                </h2>
+              </div>
             </div>
             <div className="form-group col-md-4">
               <label>Outcome Group 1</label>
