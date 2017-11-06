@@ -156,6 +156,7 @@ class GenerateReportPage extends Component {
         finalReport={this.props.finalReport}
         getReport={this.getReport.bind(this)}
         sort={this.sort.bind(this)}
+        sortedBy={this.state.sortedBy}
       />
     );
   }

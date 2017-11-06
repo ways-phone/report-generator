@@ -3,11 +3,12 @@ import React, { Component } from 'react';
 export default class ReportView extends Component {
   props: {
     handleFilterChange: () => void,
-    filter: string,
+    filter: string | void,
     clearReport: () => void,
     finalReport: [],
     getReport: () => void,
-    sort: name => void
+    sort: name => void,
+    sortedBy: string | void
   };
 
   constructor(props) {
@@ -26,7 +27,15 @@ export default class ReportView extends Component {
         </td>
       );
     }
-    return <td style={{ textAlign: 'center' }}>{result.value}</td>;
+    const num = this.getNumber(result.value.toString());
+    return <td style={{ textAlign: 'center' }}>{num}</td>;
+  }
+
+  getNumber(value) {
+    if (value.match(/\./)) {
+      return Number(value).toFixed(2);
+    }
+    return value;
   }
 
   getReport() {
@@ -37,6 +46,13 @@ export default class ReportView extends Component {
       return this.props.getReport();
     }
     return this.props.getReport();
+  }
+
+  getTableHeaderArrow(name) {
+    console.log(this.props.sortedBy);
+    if (this.props.sortedBy === name)
+      return 'glyphicon glyphicon-chevron-up pull-right';
+    return 'glyphicon glyphicon-chevron-down pull-right';
   }
 
   render() {
@@ -73,18 +89,20 @@ export default class ReportView extends Component {
                     <th style={{ minWidth: '182px', textAlign: 'center' }}>
                       Campaign
                       <i
+                        style={{ fontSize: '16px' }}
                         onClick={() =>
                           this.props.sort('Campaign', this.props.getReport())}
-                        className="caret pull-right"
+                        className={this.getTableHeaderArrow('Campaign')}
                       />
                     </th>
                     {this.props.finalReport[0].results.map(res => (
                       <th style={{ minWidth: '116px', textAlign: 'center' }}>
                         {res.name}
                         <i
+                          style={{ fontSize: '16px' }}
                           onClick={() =>
                             this.props.sort(res.name, this.props.getReport())}
-                          className="caret pull-right"
+                          className={this.getTableHeaderArrow(res.name)}
                         />
                       </th>
                     ))}
@@ -94,7 +112,7 @@ export default class ReportView extends Component {
                   {this.getReport().map(row => (
                     <tr>
                       <td>{row.name}</td>
-                      {row.results.map(this.formatTableCell)}
+                      {row.results.map(this.formatTableCell.bind(this))}
                     </tr>
                   ))}
                 </tbody>
