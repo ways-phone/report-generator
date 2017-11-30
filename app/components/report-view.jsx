@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import { remote } from 'electron';
+import fs from 'fs';
+import papa from 'papaparse';
 
 export default class ReportView extends Component {
   props: {
@@ -17,6 +20,37 @@ export default class ReportView extends Component {
       sorted: '',
       sortedBy: ''
     };
+  }
+
+  saveReport() {
+    remote.dialog.showSaveDialog({}, path => {
+      console.log(path);
+      const report = this.formatReportForDownload();
+      fs.writeFileSync(path + '.csv', papa.unparse(report));
+    });
+  }
+
+  formatReportForDownload() {
+    const report = this.props.finalReport;
+    const download = [];
+    report.forEach(row => {
+      const formatted = {};
+      formatted.Campaign = row.name;
+      row.results.forEach(result => {
+        if (result.isPercentage) {
+          formatted[result.name] = this.getNumber(result.value.toString());
+        } else if (result.value === '0' || result.value === 0) {
+          formatted[result.name] = '';
+        } else if (result.value.toString().match(/\d/)) {
+          formatted[result.name] = this.getNumber(result.value.toString());
+        } else {
+          formatted[result.name] = result.value;
+        }
+      });
+      download.push(formatted);
+    });
+    console.log(download);
+    return download;
   }
 
   formatTableCell(result) {
@@ -72,6 +106,10 @@ export default class ReportView extends Component {
                 </div>
                 Generate Report
                 <i
+                  onClick={this.saveReport.bind(this)}
+                  className="pull-right glyphicon glyphicon-save clean-btn"
+                />
+                <i
                   onClick={this.props.clearReport}
                   className="pull-right glyphicon glyphicon-remove clean-btn"
                 />
@@ -91,7 +129,8 @@ export default class ReportView extends Component {
                       <i
                         style={{ fontSize: '16px' }}
                         onClick={() =>
-                          this.props.sort('Campaign', this.props.getReport())}
+                          this.props.sort('Campaign', this.props.getReport())
+                        }
                         className={this.getTableHeaderArrow('Campaign')}
                       />
                     </th>
@@ -101,7 +140,8 @@ export default class ReportView extends Component {
                         <i
                           style={{ fontSize: '16px' }}
                           onClick={() =>
-                            this.props.sort(res.name, this.props.getReport())}
+                            this.props.sort(res.name, this.props.getReport())
+                          }
                           className={this.getTableHeaderArrow(res.name)}
                         />
                       </th>

@@ -19,6 +19,8 @@ export const GENERATE_REPORT_FAILURE = 'GENERATE_REPORT_FAILURE';
 
 export const CLEAR_REPORT = 'CLEAR_REPORT';
 
+export const EXPORT_REPORT = 'EXPORT_REPORT';
+
 const fetchCampaignKpisSuccess = kpis => ({
   type: FETCH_CAMPAIGN_KPIS_SUCCESS,
   kpis,
@@ -71,6 +73,8 @@ const generateReportFailure = err => ({
 export const clearReport = () => ({
   type: CLEAR_REPORT,
 });
+
+export const exportReport = (report) => ({type: EXPORT_REPORT, report});
 
 // async
 
