@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { remote } from 'electron';
 import fs from 'fs';
 import papa from 'papaparse';
+import xlsx from 'xlsx';
 
 export default class ReportView extends Component {
   props: {
@@ -24,33 +25,81 @@ export default class ReportView extends Component {
 
   saveReport() {
     remote.dialog.showSaveDialog({}, path => {
-      console.log(path);
       const report = this.formatReportForDownload();
-      fs.writeFileSync(path + '.csv', papa.unparse(report));
+      const wb = xlsx.utils.book_new();
+      wb.Sheets = {};
+      wb.SheetNames.push('Report');
+      const sheet = xlsx.utils.json_to_sheet(report);
+      console.log(sheet);
+      wb.Sheets['Report'] = sheet;
+      this.convertColumns(wb);
+      console.log(wb);
+
+      xlsx.writeFile(wb, path + 'xlsx', { bookType: 'xlsx' });
+      // fs.writeFileSync(path + '.xlsx', papa.unparse(report));
+    });
+  }
+
+  convertColumns(wb) {
+    const sheet = wb.Sheets['Report'];
+
+    Object.keys(sheet).forEach(key => {
+      if (key === '!ref') return;
+      if (key.indexOf('A') === -1) {
+        sheet[key].t = 'n';
+      }
     });
   }
 
   formatReportForDownload() {
     const report = this.props.finalReport;
+
     const download = [];
     report.forEach(row => {
       const formatted = {};
-      formatted.Campaign = row.name;
+      formatted.Name = row.name;
+      if (row.name === 'Total') {
+        download.push(this.createTotal());
+      } else {
+        row.results.forEach(result => {
+          if (result.isPercentage) {
+            formatted[result.name] = this.getNumber(result.value.toString());
+          } else if (result.value === '0' || result.value === 0) {
+            formatted[result.name] = '';
+          } else if (result.value.toString().match(/\d/)) {
+            formatted[result.name] = this.getNumber(result.value.toString());
+          } else {
+            formatted[result.name] = result.value;
+          }
+        });
+        download.push(formatted);
+      }
+    });
+
+    return download;
+  }
+
+  createTotal() {
+    const report = this.props.finalReport;
+    const total = {};
+    report.forEach(row => {
+      if (row.name === 'Total') return;
       row.results.forEach(result => {
         if (result.isPercentage) {
-          formatted[result.name] = this.getNumber(result.value.toString());
-        } else if (result.value === '0' || result.value === 0) {
-          formatted[result.name] = '';
-        } else if (result.value.toString().match(/\d/)) {
-          formatted[result.name] = this.getNumber(result.value.toString());
+          total[result.name] = '';
+        } else if (result.name === 'Hours') {
+          total[result.name] = !total[result.name]
+            ? (total[result.name] = Number(result.value))
+            : (total[result.name] += Number(result.value));
+        } else if (!total[result.name]) {
+          total[result.name] = result.value;
         } else {
-          formatted[result.name] = result.value;
+          total[result.name] += result.value;
         }
       });
-      download.push(formatted);
     });
-    console.log(download);
-    return download;
+    total.Name = 'Total';
+    return total;
   }
 
   formatTableCell(result) {
