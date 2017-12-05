@@ -39,7 +39,7 @@ class OutcomesPage extends Component {
   render() {
     return (
       <div>
-        <Sidebar />
+        <Sidebar location="Outcomes" />
         <div className="body-container">
           <div className="container">
             <div className="row">

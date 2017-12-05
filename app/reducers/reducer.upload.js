@@ -1,5 +1,5 @@
-import _ from "underscore";
-import * as types from "../actions/action.upload";
+import _ from 'underscore';
+import * as types from '../actions/action.upload';
 
 const allFilesUploaded = state =>
   !!(state.agents.complete && state.campaigns.complete);
@@ -33,7 +33,7 @@ const addFile = (state: {}, file: {}, type: string) => {
   newState[type] = obj;
 
   if (!state.files) {
-    newState["files"] = [file.name];
+    newState['files'] = [file.name];
   } else {
     newState.files.push(file.name);
   }
@@ -61,7 +61,7 @@ const mergeFiles = (cph: {}, outcomes: {}) => {
 
 const addAgentFile = (state, file) => {
   // add the parsed file to the cph or outcomes property
-  const newState = addFile(state, file, "agents");
+  const newState = addFile(state, file, 'agents');
 
   // if both the cph and outcomes properties exist then all agent files are uploaded
   if (!allAgentFilesUploaded(newState)) return newState;
@@ -70,7 +70,7 @@ const addAgentFile = (state, file) => {
   const data = mergeFiles(newState.agents.cph, newState.agents.outcomes);
 
   // overwrite the agents property with the merged data
-  newState.agents = { name: "agents", data, complete: true };
+  newState.agents = { name: 'agents', data, complete: true };
 
   newState.uploadComplete = allFilesUploaded(newState);
 
@@ -79,7 +79,7 @@ const addAgentFile = (state, file) => {
 
 const addCampaignFile = (state, file) => {
   // add the parsed file to the cph or outcomes property
-  const newState = addFile(state, file, "campaigns");
+  const newState = addFile(state, file, 'campaigns');
 
   // if both the cph and outcomes properties exist then all campaign files are uploaded
   if (!allCampaignFilesUploaded(newState)) return newState;
@@ -88,11 +88,20 @@ const addCampaignFile = (state, file) => {
   const data = mergeFiles(newState.campaigns.cph, newState.campaigns.outcomes);
 
   // overwrite the campaigns property with the merged data
-  newState.campaigns = { name: "campaigns", data, complete: true };
+  newState.campaigns = { name: 'campaigns', data, complete: true };
 
   newState.uploadComplete = allFilesUploaded(newState);
 
   return newState;
+};
+
+const removeUploadedFiles = state => {
+  return {
+    agents: {},
+    campaigns: {},
+    uploadComplete: false,
+    files: []
+  };
 };
 
 const handleError = (state, err) => ({ ...state, err });
@@ -106,6 +115,8 @@ export default function upload(
       return addAgentFile(state, action.file);
     case types.ADD_CAMPAIGN_FILE:
       return addCampaignFile(state, action.file);
+    case types.REMOVE_UPLOADED_FILES:
+      return removeUploadedFiles(state);
     case types.READ_FILE_ERROR:
       return handleError(state, action.err);
     default:

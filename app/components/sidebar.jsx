@@ -2,7 +2,17 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 export default class Sidebar extends Component {
-  props: {};
+  props: {
+    location: string
+  };
+
+  setActiveLink(linkName) {
+    if (linkName === this.props.location) {
+      return 'active';
+    }
+    return '';
+  }
+
   render() {
     return (
       <nav className="navbar navbar-inverse sidebar" role="navigation">
@@ -32,7 +42,7 @@ export default class Sidebar extends Component {
             id="bs-sidebar-navbar-collapse-1"
           >
             <ul className="nav navbar-nav">
-              <li className="active">
+              <li className={this.setActiveLink('Upload')}>
                 <Link to="/">
                   Upload<span
                     style={{ fontSize: '16px' }}
@@ -40,7 +50,7 @@ export default class Sidebar extends Component {
                   />
                 </Link>
               </li>
-              <li>
+              <li className={this.setActiveLink('CreateReport')}>
                 <Link to="/create-report">
                   Create Report<span
                     style={{ fontSize: '16px' }}
@@ -48,7 +58,7 @@ export default class Sidebar extends Component {
                   />
                 </Link>
               </li>
-              <li>
+              <li className={this.setActiveLink('GenerateReport')}>
                 <Link to="/generate-report">
                   Generate Report<span
                     style={{ fontSize: '16px' }}
@@ -56,7 +66,7 @@ export default class Sidebar extends Component {
                   />
                 </Link>
               </li>
-              <li>
+              <li className={this.setActiveLink('Outcomes')}>
                 <Link to="/outcomes">
                   Outcomes<span
                     style={{ fontSize: '16px' }}
@@ -64,7 +74,7 @@ export default class Sidebar extends Component {
                   />
                 </Link>
               </li>
-              <li>
+              <li className={this.setActiveLink('KPI')}>
                 <Link to="/kpi">
                   Campaign KPIs<span
                     style={{ fontSize: '16px' }}

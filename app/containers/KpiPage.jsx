@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import _ from "underscore";
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
+import React, { Component } from 'react';
+import _ from 'underscore';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
-import * as actions from "../actions/action.kpi";
-import CreateKPI from "../components/create-campaign";
-import KpiTable from "../components/kpi-table";
-import EdiTable from "../components/editable";
-import Sidebar from "../components/sidebar";
+import * as actions from '../actions/action.kpi';
+import CreateKPI from '../components/create-campaign';
+import KpiTable from '../components/kpi-table';
+import EdiTable from '../components/editable';
+import Sidebar from '../components/sidebar';
 
 class KpiPage extends Component {
   props: {
@@ -27,12 +27,12 @@ class KpiPage extends Component {
   render() {
     return (
       <div>
-        <Sidebar />
+        <Sidebar location="KPI" />
         <div className="body-container">
           <EdiTable
             update={this.props.updateCampaignKPI}
             delete={this.props.deleteCampaignKPI}
-            data={_.sortBy(this.props.kpis, "name")}
+            data={_.sortBy(this.props.kpis, 'name')}
             onSubmit={this.props.addCampaignKPI}
             errors={this.props.err}
             success={this.props.success}

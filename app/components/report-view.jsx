@@ -3,6 +3,7 @@ import { remote } from 'electron';
 import fs from 'fs';
 import papa from 'papaparse';
 import xlsx from 'xlsx';
+import AlertContainer from 'react-alert';
 
 export default class ReportView extends Component {
   props: {
@@ -23,30 +24,37 @@ export default class ReportView extends Component {
     };
   }
 
-  saveReport() {
-    remote.dialog.showSaveDialog({}, path => {
-      const report = this.formatReportForDownload();
-      const wb = xlsx.utils.book_new();
-      wb.Sheets = {};
-      wb.SheetNames.push('Report');
-      const sheet = xlsx.utils.json_to_sheet(report);
-      console.log(sheet);
-      wb.Sheets['Report'] = sheet;
-      this.convertColumns(wb);
-      console.log(wb);
+  alertOptions = {
+    offset: 14,
+    position: 'top right',
+    theme: 'dark',
+    time: 5000,
+    transition: 'scale'
+  };
 
-      xlsx.writeFile(wb, path + 'xlsx', { bookType: 'xlsx' });
-      // fs.writeFileSync(path + '.xlsx', papa.unparse(report));
+  setMessage(message, type = 'error') {
+    this.msg.show(message, {
+      time: 2000,
+      type
     });
   }
 
-  convertColumns(wb) {
-    const sheet = wb.Sheets['Report'];
+  saveReport() {
+    remote.dialog.showSaveDialog({}, path => {
+      if (!path) return;
+      const report = this.formatReportForDownload();
+      try {
+        const wb = xlsx.utils.book_new();
+        wb.Sheets = {};
+        wb.SheetNames.push('Report');
+        const sheet = xlsx.utils.json_to_sheet(report);
+        wb.Sheets['Report'] = sheet;
+        this.formatColumns(wb);
 
-    Object.keys(sheet).forEach(key => {
-      if (key === '!ref') return;
-      if (key.indexOf('A') === -1) {
-        sheet[key].t = 'n';
+        xlsx.writeFile(wb, path + '.xlsx', { bookType: 'xlsx' });
+        this.setMessage('Report successfully downloaded', 'success');
+      } catch (e) {
+        this.setMessage(`Something went wrong: ${e}`);
       }
     });
   }
@@ -63,13 +71,19 @@ export default class ReportView extends Component {
       } else {
         row.results.forEach(result => {
           if (result.isPercentage) {
-            formatted[result.name] = this.getNumber(result.value.toString());
+            formatted[result.name] = Number.parseFloat(
+              this.getNumber(result.value.toString()),
+              10
+            );
           } else if (result.value === '0' || result.value === 0) {
             formatted[result.name] = '';
           } else if (result.value.toString().match(/\d/)) {
-            formatted[result.name] = this.getNumber(result.value.toString());
+            formatted[result.name] = Number.parseFloat(result.value, 10);
           } else {
-            formatted[result.name] = result.value;
+            formatted[result.name] = Number.parseFloat(
+              this.getNumber(result.value.toString()),
+              10
+            );
           }
         });
         download.push(formatted);
@@ -77,6 +91,17 @@ export default class ReportView extends Component {
     });
 
     return download;
+  }
+
+  formatColumns(wb) {
+    const sheet = wb.Sheets['Report'];
+    Object.keys(sheet).forEach(cellName => {
+      const cell = sheet[cellName];
+      try {
+        cell.z = 'General';
+        cell.v = Number(cell.v) || cell.v;
+      } catch (e) {}
+    });
   }
 
   createTotal() {
@@ -141,6 +166,7 @@ export default class ReportView extends Component {
   render() {
     return (
       <div>
+        <AlertContainer ref={a => (this.msg = a)} {...this.alertOptions} />
         <div style={{ marginLeft: '2.5%', marginRight: '2.5%' }}>
           <div className="row">
             <div className="col-md-12 text-center">
@@ -153,14 +179,18 @@ export default class ReportView extends Component {
                     placeholder="filter"
                   />
                 </div>
-                Generate Report
-                <i
-                  onClick={this.saveReport.bind(this)}
-                  className="pull-right glyphicon glyphicon-save clean-btn"
-                />
+                {this.props.selectedReport}
                 <i
                   onClick={this.props.clearReport}
                   className="pull-right glyphicon glyphicon-remove clean-btn"
+                />
+                <i
+                  onClick={this.saveReport.bind(this)}
+                  className="glyphicon glyphicon-save clean-btn"
+                  style={{
+                    marginLeft: '20px',
+                    marginTop: '10px'
+                  }}
                 />
               </h1>
             </div>

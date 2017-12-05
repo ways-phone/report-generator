@@ -19,13 +19,13 @@ export class CreateReportPage extends Component {
     success: string,
     groups: [],
     outcomes: [],
-    reports: [],
+    reports: []
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      creatingReport: false,
+      creatingReport: false
     };
   }
 
@@ -34,13 +34,13 @@ export class CreateReportPage extends Component {
     position: 'top right',
     theme: 'dark',
     time: 5000,
-    transition: 'scale',
+    transition: 'scale'
   };
 
   setMessage(message, type = 'error') {
     this.msg.show(message, {
       time: 2000,
-      type,
+      type
     });
   }
 
@@ -57,7 +57,7 @@ export class CreateReportPage extends Component {
       this.setMessage(this.props.success, 'success');
       this.setState({
         ...this.state,
-        success: this.props.success,
+        success: this.props.success
       });
     }
   }
@@ -66,7 +66,7 @@ export class CreateReportPage extends Component {
     return this.props.groups.concat([
       { name: 'Contact Target' },
       { name: 'Conversion Target' },
-      { name: 'Hours' },
+      { name: 'Hours' }
     ]);
   }
 
@@ -76,7 +76,7 @@ export class CreateReportPage extends Component {
       ...this.state,
       creatingReport: false,
       selectedReport: null,
-      success: this.props.success,
+      success: this.props.success
     });
   }
 
@@ -86,7 +86,7 @@ export class CreateReportPage extends Component {
       ...this.state,
       creatingReport: false,
       selectedReport: null,
-      success: this.props.success,
+      success: this.props.success
     });
   }
 
@@ -97,7 +97,7 @@ export class CreateReportPage extends Component {
 
     this.setState({
       ...this.state,
-      selectedReport,
+      selectedReport
     });
   }
 
@@ -109,7 +109,7 @@ export class CreateReportPage extends Component {
     this.setState({
       ...this.state,
       creatingReport: false,
-      selectedReport: null,
+      selectedReport: null
     });
   }
 
@@ -118,7 +118,7 @@ export class CreateReportPage extends Component {
     this.setState({
       ...this.state,
       selectedReport: null,
-      success: this.props.success,
+      success: this.props.success
     });
   }
 
@@ -133,7 +133,7 @@ export class CreateReportPage extends Component {
     if (this.state.creatingReport) {
       return (
         <div>
-          <Sidebar />
+          <Sidebar location="CreateReport" />
           <div className="body-container">
             <div className="container">
               <CreateReport
@@ -152,7 +152,7 @@ export class CreateReportPage extends Component {
 
     return (
       <div>
-        <Sidebar />
+        <Sidebar location="CreateReport" />
         <AlertContainer ref={a => (this.msg = a)} {...this.alertOptions} />
         <div className="body-container">
           <div className="container">

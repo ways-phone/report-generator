@@ -186,7 +186,7 @@
     "webpack-merge": "^4.1.0"
   },
   "dependencies": {
-    "bootstrap": "^3.3.7",
+    "7zip-bin-win": "^2.1.1",
     "devtron": "^1.4.0",
     "electron-debug": "^1.2.0",
     "font-awesome": "^4.7.0",
@@ -198,6 +198,8 @@
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
     "react-router-redux": "^5.0.0-alpha.6",
+    "react-alert": "^2.4.0",
+    "react-dragula": "^1.1.17",
     "redux": "^3.7.1",
     "redux-thunk": "^2.2.0",
     "source-map-support": "^0.4.15"

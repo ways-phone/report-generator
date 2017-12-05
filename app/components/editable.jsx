@@ -10,11 +10,11 @@ export default class EdiTable extends Component {
     delete: campaign => void,
     errors:
       | {
-          message: string,
+          message: string
         }
       | {}
       | void,
-    success: string | void,
+    success: string | void
   };
 
   static isNumber(text) {
@@ -39,23 +39,24 @@ export default class EdiTable extends Component {
       campaign: {
         name: '',
         conversion: '',
-        contact: '',
+        contact: ''
       },
       reqErrors: this.props.errors,
       validationErrors: '',
       isEditing: false,
-      filter: '',
+      filter: ''
     };
   }
 
-  submit() {
+  submit(e) {
+    e.preventDefault();
     const campaign = this.state.campaign;
     if (campaign.name.trim().length > 0) {
       this.props.onSubmit(campaign);
       this.setState({
         ...this.state,
         campaign: { name: '', conversion: '', contact: '' },
-        validationErrors: '',
+        validationErrors: ''
       });
     } else {
       this.setState({ ...this.state, validationErrors: 'Invalid KPI!' });
@@ -67,7 +68,7 @@ export default class EdiTable extends Component {
     this.setState({
       ...this.state,
       campaign: { ...this.state.campaign, name },
-      err: '',
+      err: ''
     });
   }
 
@@ -76,19 +77,19 @@ export default class EdiTable extends Component {
     if (!EdiTable.isNumber(conversion)) {
       return this.setState({
         ...this.state,
-        validationErrors: 'Not a Number!',
+        validationErrors: 'Not a Number!'
       });
     }
     if (!EdiTable.isInRange(conversion)) {
       return this.setState({
         ...this.state,
-        validationErrors: 'Not a Percentage!',
+        validationErrors: 'Not a Percentage!'
       });
     }
     this.setState({
       ...this.state,
       campaign: { ...this.state.campaign, conversion },
-      err: '',
+      err: ''
     });
   }
 
@@ -97,13 +98,13 @@ export default class EdiTable extends Component {
     if (!EdiTable.isNumber(contact)) {
       return this.setState({
         ...this.state,
-        validationErrors: 'Not a Number!',
+        validationErrors: 'Not a Number!'
       });
     }
     this.setState({
       ...this.state,
       campaign: { ...this.state.campaign, contact: Number(contact) },
-      err: '',
+      err: ''
     });
   }
 
@@ -111,7 +112,7 @@ export default class EdiTable extends Component {
     if (EdiTable.isInRange(number) && EdiTable.isNumber(number)) return true;
     this.setState({
       ...this.state,
-      validationErrors: 'Invalid Conversion Entered',
+      validationErrors: 'Invalid Conversion Entered'
     });
   }
 
@@ -119,7 +120,7 @@ export default class EdiTable extends Component {
     if (EdiTable.isNumber(number)) return true;
     this.setState({
       ...this.state,
-      validationErrors: 'Invalid Contact Entered',
+      validationErrors: 'Invalid Contact Entered'
     });
   }
 
@@ -222,7 +223,7 @@ export default class EdiTable extends Component {
     this.setState({
       ...this.state,
       isEditing: !this.state.isEditing,
-      campaign: { name: '', conversion: '', contact: '' },
+      campaign: { name: '', conversion: '', contact: '' }
     });
   }
 

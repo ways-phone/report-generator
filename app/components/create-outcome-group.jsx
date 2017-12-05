@@ -9,7 +9,8 @@ export default class CreateOutcomeGroup extends Component {
     this.state = {};
   }
 
-  submit() {
+  submit(e) {
+    e.preventDefault();
     this.props.onSubmit(this.state.group);
   }
 

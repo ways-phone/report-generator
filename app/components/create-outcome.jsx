@@ -9,13 +9,14 @@ export default class CreateOutcome extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      outcome: new Outcome(),
+      outcome: new Outcome()
     };
 
     console.log(this.props);
   }
 
-  submit() {
+  submit(e) {
+    e.preventDefault();
     this.props.onSubmit(this.state.outcome);
   }
 

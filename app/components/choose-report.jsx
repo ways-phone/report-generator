@@ -10,13 +10,13 @@ export default class ChooseReport extends Component {
     selectedReport: {},
     selectReport: () => void,
     selectFile: () => void,
-    submit: () => {},
+    submit: () => {}
   };
 
   render() {
     return (
       <div>
-        <Sidebar />
+        <Sidebar location="GenerateReport" />
         <div className="container">
           <div className="body-container">
             <div className="row">
