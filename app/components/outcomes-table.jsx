@@ -30,34 +30,42 @@ export default class OutcomesTable extends Component {
     this.props.removeOutcome(outcome);
   }
 
+  getGroups() {
+    return _.sortBy(this.props.groups, 'name');
+  }
+
+  getOutcomes() {
+    return _.sortBy(this.props.outcomes, 'name');
+  }
   render() {
+    this.getOutcomes();
     return (
       <table className="table table-responsive table-bordered">
         <thead>
           <tr>
             <th>Name</th>
-            {this.props.groups.map(group => (
+            {this.getGroups().map(group => (
               <th>
                 {group.name}
                 <i
                   onClick={() => this.removeOutcomeGroup(group)}
-                  className="pull-right glyphicon glyphicon-remove"
+                  className="pull-right glyphicon glyphicon-remove clean-btn"
                 />
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {this.props.outcomes.map(outcome => (
+          {this.getOutcomes().map(outcome => (
             <tr>
               <td>
                 {outcome.name}{' '}
                 <i
                   onClick={() => this.removeOutcome(outcome)}
-                  className="pull-right glyphicon glyphicon-remove"
+                  className="pull-right glyphicon glyphicon-remove clean-btn"
                 />
               </td>
-              {this.props.groups.map(group => this.getTd(group, outcome))}
+              {this.getGroups().map(group => this.getTd(group, outcome))}
             </tr>
           ))}
         </tbody>

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { remote } from 'electron';
-import fs from 'fs';
-import papa from 'papaparse';
-import xlsx from 'xlsx';
 import AlertContainer from 'react-alert';
+
+import ExcelWriter from '../utils/ExcelWriter';
 
 export default class ReportView extends Component {
   props: {
@@ -39,92 +38,21 @@ export default class ReportView extends Component {
     });
   }
 
+  clearReport() {
+    this.props.clearReport();
+    this.setState({
+      sorted: '',
+      sortedBy: ''
+    });
+  }
+
   saveReport() {
     remote.dialog.showSaveDialog({}, path => {
-      if (!path) return;
-      const report = this.formatReportForDownload();
-      try {
-        const wb = xlsx.utils.book_new();
-        wb.Sheets = {};
-        wb.SheetNames.push('Report');
-        const sheet = xlsx.utils.json_to_sheet(report);
-        wb.Sheets['Report'] = sheet;
-        this.formatColumns(wb);
-
-        xlsx.writeFile(wb, path + '.xlsx', { bookType: 'xlsx' });
-        this.setMessage('Report successfully downloaded', 'success');
-      } catch (e) {
-        this.setMessage(`Something went wrong: ${e}`);
-      }
+      const excelWriter = new ExcelWriter(this.getReport());
+      const result = excelWriter.saveReport(path);
+      const type = result.success ? 'success' : 'error';
+      this.setMessage(result.msg, type);
     });
-  }
-
-  formatReportForDownload() {
-    const report = this.props.finalReport;
-
-    const download = [];
-    report.forEach(row => {
-      const formatted = {};
-      formatted.Name = row.name;
-      if (row.name === 'Total') {
-        download.push(this.createTotal());
-      } else {
-        row.results.forEach(result => {
-          if (result.isPercentage) {
-            formatted[result.name] = Number.parseFloat(
-              this.getNumber(result.value.toString()),
-              10
-            );
-          } else if (result.value === '0' || result.value === 0) {
-            formatted[result.name] = '';
-          } else if (result.value.toString().match(/\d/)) {
-            formatted[result.name] = Number.parseFloat(result.value, 10);
-          } else {
-            formatted[result.name] = Number.parseFloat(
-              this.getNumber(result.value.toString()),
-              10
-            );
-          }
-        });
-        download.push(formatted);
-      }
-    });
-
-    return download;
-  }
-
-  formatColumns(wb) {
-    const sheet = wb.Sheets['Report'];
-    Object.keys(sheet).forEach(cellName => {
-      const cell = sheet[cellName];
-      try {
-        cell.z = 'General';
-        cell.v = Number(cell.v) || cell.v;
-      } catch (e) {}
-    });
-  }
-
-  createTotal() {
-    const report = this.props.finalReport;
-    const total = {};
-    report.forEach(row => {
-      if (row.name === 'Total') return;
-      row.results.forEach(result => {
-        if (result.isPercentage) {
-          total[result.name] = '';
-        } else if (result.name === 'Hours') {
-          total[result.name] = !total[result.name]
-            ? (total[result.name] = Number(result.value))
-            : (total[result.name] += Number(result.value));
-        } else if (!total[result.name]) {
-          total[result.name] = result.value;
-        } else {
-          total[result.name] += result.value;
-        }
-      });
-    });
-    total.Name = 'Total';
-    return total;
   }
 
   formatTableCell(result) {
@@ -181,7 +109,7 @@ export default class ReportView extends Component {
                 </div>
                 {this.props.selectedReport}
                 <i
-                  onClick={this.props.clearReport}
+                  onClick={this.clearReport.bind(this)}
                   className="pull-right glyphicon glyphicon-remove clean-btn"
                 />
                 <i

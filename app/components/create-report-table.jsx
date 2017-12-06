@@ -7,13 +7,13 @@ export default class CreateReportTable extends Component {
     ordered: [],
     removeColumn: column => [],
     setErrorClass: column => string,
-    verifyColumns: columns => void,
+    verifyColumns: columns => void
   };
 
   dragulaDecorator = componentBackingInstance => {
     if (componentBackingInstance) {
       let options = {
-        direction: 'horizontal',
+        direction: 'horizontal'
       };
       const dragula = Dragula([componentBackingInstance], options);
 
@@ -99,6 +99,7 @@ export default class CreateReportTable extends Component {
                     <th className={this.props.setErrorClass(column)}>
                       {column.name}
                       <i
+                        style={{ marginLeft: '5px' }}
                         onClick={() => this.props.removeColumn(column)}
                         className="pull-right glyphicon glyphicon-remove clean-btn"
                       />

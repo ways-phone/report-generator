@@ -37,12 +37,4 @@ export const readFile = path => dispatch => {
 
   if (isAgent) return dispatch(addAgentFile(config));
   return dispatch(addCampaignFile(config));
-
-  // dispatch(uploadFile(path));
-  // const promise = () => new Promise(resolve => resolve(dispatch(uploadFile(fileName))));
-
-  // return promise()
-  //   .then(() => fs.readFileAsync(fileName, 'utf-8').then(csv => dispatch(parseFile(csv))))
-  //   .then(() => dispatch(joinFiles()))
-  //   .catch(err => dispatch(readFileError(err)));
 };

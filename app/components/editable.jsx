@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import EditableCell from './editable-cell';
+import AlertContainer from 'react-alert';
 
 export default class EdiTable extends Component {
   props: {
@@ -48,17 +49,34 @@ export default class EdiTable extends Component {
     };
   }
 
+  alertOptions = {
+    offset: 14,
+    position: 'top right',
+    theme: 'dark',
+    time: 5000,
+    transition: 'scale'
+  };
+
+  setMessage(message, type = 'error') {
+    this.msg.show(message, {
+      time: 2000,
+      type
+    });
+  }
+
   submit(e) {
     e.preventDefault();
     const campaign = this.state.campaign;
     if (campaign.name.trim().length > 0) {
       this.props.onSubmit(campaign);
+      this.setMessage('Campaign created successfully!', 'success');
       this.setState({
         ...this.state,
         campaign: { name: '', conversion: '', contact: '' },
         validationErrors: ''
       });
     } else {
+      this.setMessage('Invalid KPI!');
       this.setState({ ...this.state, validationErrors: 'Invalid KPI!' });
     }
   }
@@ -75,12 +93,14 @@ export default class EdiTable extends Component {
   changeConversion(e) {
     const conversion = e.target.value;
     if (!EdiTable.isNumber(conversion)) {
+      this.setMessage('Not a number!');
       return this.setState({
         ...this.state,
         validationErrors: 'Not a Number!'
       });
     }
     if (!EdiTable.isInRange(conversion)) {
+      this.setMessage('Not a Percentage!');
       return this.setState({
         ...this.state,
         validationErrors: 'Not a Percentage!'
@@ -96,11 +116,13 @@ export default class EdiTable extends Component {
   changeContact(e) {
     const contact = e.target.value;
     if (!EdiTable.isNumber(contact)) {
+      this.setMessage('Not a number!');
       return this.setState({
         ...this.state,
         validationErrors: 'Not a Number!'
       });
     }
+
     this.setState({
       ...this.state,
       campaign: { ...this.state.campaign, contact: Number(contact) },
@@ -109,7 +131,11 @@ export default class EdiTable extends Component {
   }
 
   validateConversion(number) {
-    if (EdiTable.isInRange(number) && EdiTable.isNumber(number)) return true;
+    if (EdiTable.isInRange(number) && EdiTable.isNumber(number)) {
+      this.setMessage('Campaign updated successfully!', 'success');
+      return true;
+    }
+    this.setMessage('Invalid Conversion Entered!');
     this.setState({
       ...this.state,
       validationErrors: 'Invalid Conversion Entered'
@@ -117,7 +143,11 @@ export default class EdiTable extends Component {
   }
 
   validateContact(number) {
-    if (EdiTable.isNumber(number)) return true;
+    if (EdiTable.isNumber(number)) {
+      this.setMessage('Campaign updated successfully!', 'success');
+      return true;
+    }
+    this.setMessage('Invalid Contact Entered!');
     this.setState({
       ...this.state,
       validationErrors: 'Invalid Contact Entered'
@@ -125,7 +155,11 @@ export default class EdiTable extends Component {
   }
 
   validateName(name) {
-    if (name.trim().length > 0) return true;
+    if (name.trim().length > 0) {
+      this.setMessage('Campaign updated successfully!', 'success');
+      return true;
+    }
+    this.setMessage('Invalid Name Entered!');
     this.setState({ ...this.state, validationErrors: 'Invalid Name Entered' });
   }
 
@@ -180,45 +214,6 @@ export default class EdiTable extends Component {
     );
   }
 
-  setFeedback() {
-    if (this.state.validationErrors) {
-      return (
-        <div className="has-error text-center">
-          <span
-            style={{ fontSize: '32px', color: '#ff7976' }}
-            className="help-block"
-          >
-            {this.state.validationErrors}
-          </span>
-        </div>
-      );
-    }
-    if (this.props.errors && this.props.errors.message) {
-      return (
-        <div className="has-error text-center">
-          <span
-            style={{ fontSize: '32px', color: '#ff7976' }}
-            className="help-block"
-          >
-            {this.getReqError()}
-          </span>
-        </div>
-      );
-    }
-    if (this.props.success) {
-      return (
-        <div className="has-success text-center">
-          <span
-            style={{ fontSize: '32px', color: 'rgb(132, 255, 118)' }}
-            className="help-block"
-          >
-            {this.props.success || ''}
-          </span>
-        </div>
-      );
-    }
-  }
-
   toggleIsEditing() {
     this.setState({
       ...this.state,
@@ -252,6 +247,7 @@ export default class EdiTable extends Component {
 
     return (
       <div className="container">
+        <AlertContainer ref={a => (this.msg = a)} {...this.alertOptions} />
         <div className="row">
           <div className="col-md-12 text-center">
             <h1>
@@ -338,10 +334,6 @@ export default class EdiTable extends Component {
               </table>
             )}
           </div>
-        </div>
-
-        <div className="row">
-          <div className="col-md-12">{this.setFeedback()}</div>
         </div>
       </div>
     );

@@ -28,11 +28,7 @@ class UploadPage extends Component {
   }
 
   render() {
-    const selectFileButton = <SelectFileButton upload={this.props.readFile} />;
-    const generateReportButton = <GenerateReportButton />;
-    const button = this.props.uploadComplete
-      ? generateReportButton
-      : selectFileButton;
+    const button = <SelectFileButton upload={this.props.readFile} />;
 
     return (
       <div>
