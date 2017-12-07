@@ -74,7 +74,8 @@ export default class AddStatic extends Component {
     this.setState({ ...this.state, value: e.target.value });
   }
 
-  submit() {
+  submit(e) {
+    e.preventDefault();
     if (this.validate()) {
       this.state.id = uuidv1();
       console.log(this.state);

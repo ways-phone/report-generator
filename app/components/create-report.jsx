@@ -12,7 +12,7 @@ export default class CreateReport extends Component {
     options: [],
     create: report => void,
     edit: report => void,
-    cancel: () => void,
+    cancel: () => void
   };
 
   constructor(props) {
@@ -22,9 +22,8 @@ export default class CreateReport extends Component {
       isCreatingStatic: false,
       columns: [],
       ordered: [],
-      validOrder: true,
       invalidItems: [],
-      name: '',
+      name: ''
     };
   }
 
@@ -33,7 +32,7 @@ export default class CreateReport extends Component {
     position: 'top right',
     theme: 'dark',
     time: 5000,
-    transition: 'scale',
+    transition: 'scale'
   };
 
   componentDidMount() {
@@ -58,7 +57,7 @@ export default class CreateReport extends Component {
       ...this.state,
       name: this.props.report.name,
       columns: this.props.report.columns,
-      ordered: this.props.report.columns,
+      ordered: this.props.report.columns
     });
   }
 
@@ -68,41 +67,11 @@ export default class CreateReport extends Component {
       : this.state.columns;
   }
 
-  findInvalidColumns(cols) {
-    const invalidItems = [];
-
-    cols.forEach((column, index) => {
-      for (let i = 0; i < index; i++) {
-        const columnToCheck = cols[i];
-        if (columnToCheck.value.indexOf(column.name) === -1) continue;
-        invalidItems.push({ dependant: columnToCheck, main: column });
-      }
-    });
-
-    return invalidItems;
-  }
-
-  setInvalidColumnMessages(invalidItems, validOrder) {
-    if (validOrder) return;
-
-    invalidItems.forEach(({ dependant, main }) => {
-      this.setMessage(`${dependant.name} relies upon ${main.name} to exist`);
-    });
-  }
-
-  verifyColumnDependencies(cols) {
-    const invalidItems = this.findInvalidColumns(cols);
-
-    const validOrder = invalidItems.length === 0;
-
-    this.setInvalidColumnMessages(invalidItems, validOrder);
-
+  reorderColumns(cols) {
     this.setState({
       ...this.state,
-      validOrder,
-      invalidItems,
       ordered: cols,
-      success: '',
+      success: ''
     });
   }
 
@@ -113,7 +82,7 @@ export default class CreateReport extends Component {
       isCreatingStatic: false,
       columns,
       ordered: columns,
-      success: 'Column added successfully',
+      success: 'Column added successfully'
     });
   }
 
@@ -135,7 +104,7 @@ export default class CreateReport extends Component {
       ...this.state,
       isCreatingFormula,
       isCreatingStatic,
-      success: '',
+      success: ''
     });
   }
 
@@ -144,7 +113,7 @@ export default class CreateReport extends Component {
       ...this.state,
       isCreatingFormula: false,
       isCreatingStatic: false,
-      success: '',
+      success: ''
     });
   }
 
@@ -159,7 +128,7 @@ export default class CreateReport extends Component {
   setMessage(message, type = 'error') {
     this.msg.show(message, {
       time: 2000,
-      type,
+      type
     });
   }
 
@@ -174,18 +143,8 @@ export default class CreateReport extends Component {
       ...this.state,
       columns: updated,
       ordered: updated,
-      success: ' Column removed successfully',
+      success: ' Column removed successfully'
     });
-  }
-
-  setErrorClass(column) {
-    const isInvalid =
-      this.state.invalidItems.filter(
-        ({ dependant, main }) =>
-          dependant.id === column.id || main.id === column.id
-      ).length > 0;
-
-    return isInvalid ? 'error' : '';
   }
 
   submit() {
@@ -291,8 +250,7 @@ export default class CreateReport extends Component {
               columns={this.state.columns}
               ordered={this.state.ordered}
               removeColumn={this.removeColumn.bind(this)}
-              setErrorClass={this.setErrorClass.bind(this)}
-              verifyColumns={this.verifyColumnDependencies.bind(this)}
+              reorderColumns={this.reorderColumns.bind(this)}
             />
           </div>
           <hr />

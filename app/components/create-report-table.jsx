@@ -7,7 +7,7 @@ export default class CreateReportTable extends Component {
     ordered: [],
     removeColumn: column => [],
     setErrorClass: column => string,
-    verifyColumns: columns => void
+    reorderColumns: columns => void
   };
 
   dragulaDecorator = componentBackingInstance => {
@@ -83,7 +83,7 @@ export default class CreateReportTable extends Component {
 
   alterColumns(oldIndex, newIndex) {
     const columns = this.reorderColumns(oldIndex, newIndex);
-    this.props.verifyColumns(columns);
+    this.props.reorderColumns(columns);
   }
 
   render() {
@@ -96,7 +96,7 @@ export default class CreateReportTable extends Component {
               <table className="table table-bordered">
                 <thead>
                   <tr>
-                    <th className={this.props.setErrorClass(column)}>
+                    <th>
                       {column.name}
                       <i
                         style={{ marginLeft: '5px' }}
@@ -108,9 +108,7 @@ export default class CreateReportTable extends Component {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className={this.props.setErrorClass(column)}>
-                      {column.value}
-                    </td>
+                    <td>{column.value}</td>
                   </tr>
                 </tbody>
               </table>

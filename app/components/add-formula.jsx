@@ -100,7 +100,8 @@ export default class AddFormula extends Component {
     this.setState({ ...this.state, isPercentage: !this.state.isPercentage });
   }
 
-  submit() {
+  submit(e) {
+    e.preventDefault();
     if (this.validate()) {
       this.state.id = uuidv1();
       this.props.submit(this.state);

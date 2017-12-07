@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import AlertContainer from 'react-alert';
 
 export default class CreateOutcomeGroup extends Component {
   props: {
@@ -9,9 +10,28 @@ export default class CreateOutcomeGroup extends Component {
     this.state = {};
   }
 
+  alertOptions = {
+    offset: 14,
+    position: 'top right',
+    theme: 'dark',
+    time: 5000,
+    transition: 'scale'
+  };
+
+  setMessage(message, type = 'error') {
+    this.msg.show(message, {
+      time: 2000,
+      type
+    });
+  }
+
   submit(e) {
     e.preventDefault();
-    this.props.onSubmit(this.state.group);
+    if (this.state.group && this.state.group.name.trim()) {
+      this.props.onSubmit(this.state.group);
+    } else {
+      this.setMessage('An outcome group cannot be blank.');
+    }
   }
 
   onChange(e) {
@@ -23,6 +43,7 @@ export default class CreateOutcomeGroup extends Component {
   render() {
     return (
       <div>
+        <AlertContainer ref={a => (this.msg = a)} {...this.alertOptions} />
         <h3>Add outcome Group</h3>
         <form className="col-md-12">
           <div className="form-group">
